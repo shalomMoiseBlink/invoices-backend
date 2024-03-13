@@ -1,0 +1,84 @@
+{
+    "lastCreattionDate": "13-03-2024",
+    "data": [
+    {
+        "id": 1,
+        "name": "John Doe",
+        "email": "john@example.com",
+        "amount": "10",
+        "dueDate": "2024-03-15",
+        "status": "Paid"
+    },
+    {
+        "id": 2,
+        "name": "Jane Smith",
+        "email": "jane@example.com",
+        "amount": "15",
+        "dueDate": "2024-03-18",
+        "status": "Paid"
+    },
+    {
+        "id": 3,
+        "name": "Alice Johnson",
+        "email": "alice@example.com",
+        "amount": "20",
+        "dueDate": "2024-03-20",
+        "status": "Unpaid"
+    },
+    {
+        "id": 4,
+        "name": "Bob Brown",
+        "email": "bob@example.com",
+        "amount": "20",
+        "dueDate": "2024-03-25",
+        "status": "Unpaid"
+    },
+    {
+        "id": 5,
+        "name": "Emily Davis",
+        "email": "emily@example.com",
+        "amount": "3.20",
+        "dueDate": "2024-03-28",
+        "status": "Unpaid"
+    },
+    {
+        "id": 6,
+        "name": "Michael Wilson",
+        "email": "michael@example.com",
+        "amount": "3.50",
+        "dueDate": "2024-03-30",
+        "status": "Unpaid"
+    },
+    {
+        "id": 7,
+        "name": "Sophia Lee",
+        "email": "sophia@example.com",
+        "amount": "4.00",
+        "dueDate": "2024-04-05",
+        "status": "Paid"
+    },
+    {
+        "id": 8,
+        "name": "William Clark",
+        "email": "william@example.com",
+        "amount": "4.50",
+        "dueDate": "2024-04-10",
+        "status": "Paid"
+    },
+    {
+        "id": 9,
+        "name": "Olivia Hall",
+        "email": "olivia@example.com",
+        "amount": "5.00",
+        "dueDate": "2024-04-15",
+        "status": "Unpaid"
+    },
+    {
+        "id": 10,
+        "name": "Daniel Martinez",
+        "email": "daniel@example.com",
+        "amount": "5.50",
+        "dueDate": "2024-04-20",
+        "status": "Paid"
+    }
+]}
