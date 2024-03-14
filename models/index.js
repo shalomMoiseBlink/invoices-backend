@@ -41,10 +41,8 @@ exports.createIntent = (body) => {
     ).then(({ data }) => {
         return data;
 
-    }).then(
-        (res) => res).catch((err) => {
-            // console.log(err)
-            return err
+    }).then((res) => res).catch((err) => {
+            return err.response.data
         });
 
 

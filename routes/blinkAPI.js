@@ -21,7 +21,11 @@ router.post("/token", function (req, res, next) {
 router.post("/intent", function (req, res, next) {
     return createIntent(req.body)
         .then((intent) => {
+            console.log("intinent", intent)
             res.send(intent)
+        }).catch((err)=>{
+        console.log("erro in ctronller", err)
+            res.send(err)
         })
 })
 
