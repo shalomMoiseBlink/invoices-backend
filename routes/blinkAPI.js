@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const fs = require("fs");
 const { createNewToken, createIntent, processPayment, getTransaction,createPayLink } = require("../models");
-const { checkForUpdate } = require("../utils")
+const { checkForUpdate, createFakeData,dueDate } = require("../utils")
 const invoices = require("../storage/invoices.json");
 
 router.post("/token", function (req, res, next) {
@@ -56,6 +56,7 @@ router.post("/paylink/", function (req, res, next) {
 
 // invoice managment
 router.get("/invoices", function (req, res, next) {
+    const invoices = fs.readFileSync('./storage/invoices.json', 'utf8');
     res.send(invoices);
 })
 
@@ -86,6 +87,27 @@ router.patch("/invoices/:id", function (req, res, next) {
     });
 });
 
+//create new invoices
+router.post("/invoices/refresh", function (req, res, next) {
+    let {amount} = req.query;
+    if(!amount) amount = 10;
+    const invoiceArr = [];
+for(i = 1; i <= amount;i++){
+const invoice = createFakeData(dueDate());
+invoiceArr.push(invoice);
+}
+
+fs.writeFile("./storage/invoices.json", JSON.stringify(invoiceArr), (err) => {
+    if (err)
+        console.log(err);
+    else {
+        res.send({
+            msg: "New Invoices generated",
+            invoices: invoiceArr
+        });
+    }
+});
+})
 
 
 module.exports = router;
