@@ -45,7 +45,11 @@ router.post("/process/", function (req, res, next) {
 router.get("/transactions/:id", function (req, res, next) {
     return getTransaction(req.params.id)
         .then((transaction) => {
+            console.log(transaction)
             res.send(transaction);
+        }).catch((err) => {
+            const {status, data} = err.response;
+            res.status(status).send({status: status, msg: data.error})
         })
 }
 )
@@ -66,31 +70,41 @@ router.get("/invoices", function (req, res, next) {
 
 
 router.get("/invoices/:id", function (req, res, next) {
-    const {invoices} = JSON.parse(fs.readFileSync('./storage/invoices.json', 'utf8'));
+    const { invoices } = JSON.parse(fs.readFileSync('./storage/invoices.json', 'utf8'));
     const invoice = invoices.filter((invoice) => invoice.id == req.params.id)[0]
-    res.send(invoice);
+    if (invoice) {
+        res.send(invoice);
+    } else {
+        res.status(404).send({ status: 404, msg: "Invoice not found." })
+    }
+
 })
 
 router.patch("/invoices/:id", function (req, res, next) {
-    const {invoices, created_at} = JSON.parse(fs.readFileSync('./storage/invoices.json', 'utf8'));
+    const { invoices, created_at } = JSON.parse(fs.readFileSync('./storage/invoices.json', 'utf8'));
     const index = invoices.findIndex((invoice) => invoice.id == req.params.id);
     const invoice = invoices.filter((invoice) => invoice.id == req.params.id)[0];
-    const toChange = req.body;
-    for (item in toChange) {
-        invoice[item] = toChange[item];
-    }
-    invoices[index] = invoice;
-    fs.writeFile("./storage/invoices.json", JSON.stringify({created_at,invoices}), (err) => {
-        if (err)
-            console.log(err);
-        else {
-            res.send({
-                msg: "Invoice changed",
-                changed: Object.keys(toChange),
-                invoice
-            });
+    if (!invoice) {
+        res.status(404).send({ status: 404, msg: "Invoice not found." })
+    } else {
+
+        const toChange = req.body;
+        for (item in toChange) {
+            invoice[item] = toChange[item];
         }
-    });
+        invoices[index] = invoice;
+        fs.writeFile("./storage/invoices.json", JSON.stringify({ created_at, invoices }), (err) => {
+            if (err)
+                console.log(err);
+            else {
+                res.send({
+                    msg: "Invoice changed",
+                    changed: Object.keys(toChange),
+                    invoice
+                });
+            }
+        });
+    }
 });
 
 //create new invoices

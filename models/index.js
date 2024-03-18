@@ -76,9 +76,6 @@ exports.getTransaction = (id) => {
         }
     }).then((res) => {
         return res.data
-    }).catch((err) => {
-
-        console.log("Error is here: ", err)
     })
 }
 
