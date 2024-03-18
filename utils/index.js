@@ -1,6 +1,6 @@
 const fs = require("fs");
 const axios = require("axios");
-exports.getToken = () => {
+const getToken = () => {
   try {
     const data = fs.readFileSync('./storage/token.json', 'utf8');
     return JSON.parse(data)
@@ -9,7 +9,7 @@ exports.getToken = () => {
   }
 }
 
-exports.storeToken = (token) => {
+const storeToken = (token) => {
   const { access_token } = token.token
   const content = access_token
   fs.writeFile('./storage/token.json', content, err => {
@@ -21,7 +21,7 @@ exports.storeToken = (token) => {
 }
 
 
-exports.checkForUpdate = (url) => {
+const checkForUpdate = (url) => {
   if (url) {
     const responObj = {};
     url.split("?")[1].split("&").map((datum) => {
@@ -67,7 +67,7 @@ const createDate = () => {
   return formattedDate;
 }
 const limitMonths = ['', 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-exports.dueDate = () => {
+const dueDate = () => {
   todaysDate = createDate();
   const range = Math.round(generateRandomNumber(1, 10));
   const dateArr = todaysDate.split("-");
@@ -89,7 +89,7 @@ exports.dueDate = () => {
 }
 
 
-exports.createFakeData = (newDate) => {
+const createFakeData = (newDate) => {
   const name = faker.person.fullName();
   const email = faker.internet.email();
   const amount = generateRandomNumber(1.01, 24.99);
@@ -111,4 +111,10 @@ exports.createFakeData = (newDate) => {
     currency
   }
   return newInvoice
+}
+
+
+
+module.exports = {getToken,storeToken,
+  checkForUpdate, createDate, dueDate, createFakeData
 }
