@@ -132,5 +132,12 @@ router.post("/invoices/refresh", function (req, res, next) {
     });
 })
 
+router.get("/invoicecheck", function (req, res, next) {
+    const { invoices, created_at } = JSON.parse(fs.readFileSync('./storage/invoices.json', 'utf8'));
+    const todaySDate = createDate();
+    const unPaidInvoices = invoices.filter((invoice)=>invoice.status !=="Paid").length;
+    if(todaySDate === created_at && unPaidInvoices > 0) res.send({status: 200, msg: "No Change Required"});
+    else res.send({status: 200, msg: "Reset Invoices"});
+    });
 
 module.exports = router;
