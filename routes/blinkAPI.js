@@ -21,7 +21,6 @@ router.post("/token", function (req, res, next) {
 router.post("/intent", function (req, res, next) {
     return createIntent(req.body)
         .then((intent) => {
-            console.log("intinent", intent)
             res.send(intent)
         }).catch((err) => {
             console.log("error in controller ", err)
@@ -45,11 +44,10 @@ router.post("/process/", function (req, res, next) {
 router.get("/transactions/:id", function (req, res, next) {
     return getTransaction(req.params.id)
         .then((transaction) => {
-            console.log(transaction)
             res.send(transaction);
         }).catch((err) => {
-            const {status, data} = err.response;
-            res.status(status).send({status: status, msg: data.error})
+            const { status, data } = err.response;
+            res.status(status).send({ status: status, msg: data.error })
         })
 }
 )
@@ -77,6 +75,28 @@ router.get("/invoices/:id", function (req, res, next) {
     } else {
         res.status(404).send({ status: 404, msg: "Invoice not found." })
     }
+
+})
+
+router.post("/invoices/", function (req, res, next) {
+    const { invoices, created_at } = JSON.parse(fs.readFileSync('./storage/invoices.json', 'utf8'));
+    const newInvoice = createFakeData(dueDate());
+    if (req.body.name) newInvoice.name = req.body.name;
+    if (req.body.amount) newInvoice.amount = req.body.amount;
+    if (req.body.email) newInvoice.email = req.body.email;
+    if (req.body.dueDate) newInvoice.dueDate = req.body.dueDate;
+    invoices.push(newInvoice)
+    fs.writeFile("./storage/invoices.json", JSON.stringify({ created_at, invoices }), (err) => {
+        if (err)
+            console.log(err);
+        else {
+            res.send({
+                msg: "New Invoice generated",
+                invoice: newInvoice
+            });
+        }
+    });
+
 
 })
 
@@ -135,9 +155,39 @@ router.post("/invoices/refresh", function (req, res, next) {
 router.get("/invoicecheck", function (req, res, next) {
     const { invoices, created_at } = JSON.parse(fs.readFileSync('./storage/invoices.json', 'utf8'));
     const todaySDate = createDate();
-    const unPaidInvoices = invoices.filter((invoice)=>invoice.status !=="Paid").length;
-    if(todaySDate === created_at && unPaidInvoices > 0) res.send({status: 200, msg: "No Change Required"});
-    else res.send({status: 200, msg: "Reset Invoices"});
-    });
+    const unPaidInvoices = invoices.filter((invoice) => invoice.status !== "Paid").length;
+    if (todaySDate === created_at && unPaidInvoices > 0) res.send({ status: 200, msg: "No Change Required" });
+    else res.send({ status: 200, msg: "Reset Invoices" });
+});
+
+// webhook for paylinks
+
+router.post("/paylink-notification" ,function(req,res,next){
+    console.log(req.body);
+    const invoiceID= req.body.reference.split(" ID:")[1];
+    const { invoices, created_at } = JSON.parse(fs.readFileSync('./storage/invoices.json', 'utf8'));
+    const index = invoices.findIndex((invoice) => invoice.id == invoiceID);
+    const invoice = invoices.filter((invoice) => invoice.id == invoiceID)[0];
+    console.log(invoiceID , invoices.map((invoice)=>invoice.id), invoice, index)
+    if (!invoice) {
+        res.status(404).send({ status: 404, msg: "Invoice not found." })
+    } else {
+        invoice.status ="Paid"
+        invoices[index] = invoice;
+        console.log(invoices)
+        fs.writeFile("./storage/invoices.json", JSON.stringify({ created_at, invoices }), (err) => {
+            if (err)
+                console.log(err);
+            else {
+                res.send({
+                    msg: "Invoice changed",
+                    changed: "",
+                    invoice
+                });
+            }
+        });
+    }
+
+})
 
 module.exports = router;
