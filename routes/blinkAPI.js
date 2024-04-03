@@ -2,14 +2,14 @@ const express = require("express");
 const router = express.Router();
 const fs = require("fs");
 const { createNewToken, createIntent, processPayment, getTransaction, createPayLink } = require("../models");
-const { checkForUpdate, createFakeData, dueDate, createDate } = require("../utils")
+const { checkForUpdate, createFakeData, dueDate, createDate,updateFromNotification} = require("../utils")
 
 
 router.post("/token", function (req, res, next) {
     return createNewToken().then((token) => {
         fs.writeFile("./storage/token.json", JSON.stringify(token), (err) => {
             if (err)
-                res.status(400).send({ status: 400, msg: "Error in creating a token" })
+            res.status(400).send({ status: 400, msg: "Error in creating a token" })
             else {
                 res.send(token);
             }
@@ -34,15 +34,16 @@ router.post("/process/", function (req, res, next) {
         .then((data) => {
 
             const url = Object.values(data)[0];
-            return checkForUpdate(url)
-
-        }).then(() => res.redirect(url)).catch((err) => {
+            checkForUpdate(url)
+            res.redirect(url)
+        }).catch((err) => {
+            console.log(err)
             const { message, data } = err.response.data;
             let errorString = `${message}:\n`;
             for (item in data) {
                 errorString += data[item][0] + ",\n";
             }
-            errorString = errorString.substring(0, str.length - 1) + ".";
+            errorString =  errorString.substring(0, str.length - 1) + ".";
             res.status(401).redirect(`http://localhost:3000/error?message=${errorString}`);
 
         })
@@ -73,7 +74,7 @@ router.post("/paylink/", function (req, res, next) {
 // invoice managment
 router.get("/invoices", function (req, res, next) {
     const invoices = fs.readFileSync('./storage/invoices.json', 'utf8');
-    if (!invoices) res.status(404).send({ status: 404, msg: "Invoices not found." });
+    if(!invoices)   res.status(404).send({ status: 404, msg: "Invoices not found." });
     res.send(invoices);
 })
 
@@ -199,5 +200,12 @@ router.post("/paylink-notification", function (req, res, next) {
     }
 
 })
+// payment notificatyion 
+router.post("/payment-notification", function(req,res,next){
 
+ 
+    updateFromNotification(req.body)
+
+    res.send({notification: "recieved"})
+})
 module.exports = router;

@@ -28,27 +28,33 @@ const checkForUpdate = (url) => {
       const [key, value] = datum.split("=");
       return { [key]: value }
     }).forEach((item) => {
-      // const [name,value] = Object.entries(item).split(",");
-      // responObj[name] = valu
       const key = Object.keys(item)[0];
 
       responObj[key] = item[key]
     })
     if (responObj.merchant_data) {
-
       const merchantData = JSON.parse(decodeURIComponent(decodeURIComponent(responObj.merchant_data)));
-      if (responObj.status === "captured") {
-        return axios.patch(`http://localhost:9000/blink/invoices/${merchantData.invoice_id}`, {
-          status: "Paid"
-        })
-      }
+      update(merchantData, responObj.status )
     } return '';
-
-
-
   }
 }
 
+const updateFromNotification = (notifcation) => {
+  const { status, merchant_data } = notifcation;
+  const decodedJSONString = decodeURIComponent(decodeURIComponent(merchant_data));
+  const merchantData = JSON.parse(decodedJSONString.split("+").join(""));
+  update(merchantData, status )
+}
+
+require('dotenv').config();
+const update =(merchantData, txStatus) =>{
+  if ((merchantData.payment_type === "direct-debit" && txStatus === "Pending%2BSubmission") ||
+  (merchantData.payment_type === "credit-card" && txStatus === "captured")) {
+  return axios.patch(`${process.env.BACK_END_URL}/blink/invoices/${merchantData.invoice_id}`, {
+    status: "Paid"
+  }) 
+}
+}
 const { faker } = require('@faker-js/faker');
 const generateRandomNumber = (min, max) => Math.round((Math.random() * (max - min) + min) * 100) / 100;
 
@@ -116,6 +122,7 @@ const createFakeData = (newDate) => {
 
 
 
-module.exports = {getToken,storeToken,
-  checkForUpdate, createDate, dueDate, createFakeData
+module.exports = {
+  getToken, storeToken,
+  checkForUpdate, createDate, dueDate, createFakeData, updateFromNotification
 }
