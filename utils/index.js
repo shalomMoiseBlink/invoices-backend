@@ -94,9 +94,10 @@ const createFakeData = (newDate) => {
   const email = faker.internet.email();
   const amount = generateRandomNumber(1.01, 24.99);
   const gbp = { name: "United Kingdom Pound", code: "GBP", symbol: "£" };
-  const usd = { name: "United States Dollar", code: "USD", symbol: "$" };  
-  const euro = { name: "Euro Member Countries", code: "EUR", symbol: "€" };
-  const currency = Math.random() < 0.75 ? gbp : Math.random() < 0.5 ? usd : euro;
+  // const usd = { name: "United States Dollar", code: "USD", symbol: "$" };  
+  // const euro = { name: "Euro Member Countries", code: "EUR", symbol: "€" };
+  // const currency = Math.random() < 0.75 ? gbp : Math.random() < 0.5 ? usd : euro;
+  const currency = gbp;
   const status = "Unpaid";
   const id = faker.string.uuid().split("-")[0];
   const dueDate = newDate;

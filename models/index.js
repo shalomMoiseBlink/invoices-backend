@@ -59,9 +59,6 @@ exports.processPayment = (body) => {
         }
     }).then((res) => {
         return res.data
-    }).catch((err) => {
-
-        console.log("Error is here: ", err)
     })
 
 }
