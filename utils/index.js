@@ -32,9 +32,10 @@ const checkForUpdate = (url) => {
 
       responObj[key] = item[key]
     })
+    console.log(responObj)
     if (responObj.merchant_data) {
       const merchantData = JSON.parse(decodeURIComponent(decodeURIComponent(responObj.merchant_data)));
-      update(merchantData, responObj.status )
+      update(merchantData, responObj.status, responObj.transaction_id )
     } return '';
   }
 }
@@ -45,20 +46,6 @@ const updateFromNotification = (notifcation) => {
   const merchantData = JSON.parse(decodedJSONString.split("+").join(""));
   update(merchantData, status )
 }
-
-require('dotenv').config();
-const update =(merchantData, txStatus) =>{
-  if ((merchantData.payment_type === "direct-debit" && txStatus === "Pending%2BSubmission") ||
-  (merchantData.payment_type === "credit-card" && txStatus === "captured")) {
-  return axios.patch(`${process.env.BACK_END_URL}/blink/invoices/${merchantData.invoice_id}`, {
-    status: "Paid"
-  }) 
-}
-}
-const { faker } = require('@faker-js/faker');
-const generateRandomNumber = (min, max) => Math.round((Math.random() * (max - min) + min) * 100) / 100;
-
-
 const createDate = () => {
   const currentDate = new Date();
 
@@ -72,6 +59,22 @@ const createDate = () => {
 
   return formattedDate;
 }
+require('dotenv').config();
+const update =(merchantData, txStatus, transaction_id) =>{
+  if ((merchantData.payment_type === "direct-debit" && txStatus === "Pending%2BSubmission") ||
+  (merchantData.payment_type === "credit-card" && txStatus === "captured")) {
+  return axios.patch(`${process.env.BACK_END_URL}/blink/invoices/${merchantData.invoice_id}`, {
+    status: "Paid",
+    transaction_id,
+    paidDate: createDate()
+  }) 
+}
+}
+const { faker } = require('@faker-js/faker');
+const generateRandomNumber = (min, max) => Math.round((Math.random() * (max - min) + min) * 100) / 100;
+
+
+
 const limitMonths = ['', 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 const dueDate = () => {
   todaysDate = createDate();
