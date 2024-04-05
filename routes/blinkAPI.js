@@ -43,7 +43,7 @@ router.post("/process/", function (req, res, next) {
             for (item in data) {
                 errorString += data[item][0] + ",\n";
             }
-            errorString =  errorString.substring(0, str.length - 1) + ".";
+            errorString =  errorString.substring(0, errorString.length - 1) + ".";
             res.status(401).redirect(`http://localhost:3000/error?message=${errorString}`);
 
         })
