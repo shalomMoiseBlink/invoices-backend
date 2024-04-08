@@ -73,7 +73,7 @@ router.post("/paylink/", function (req, res, next) {
 
 // invoice managment
 router.get("/invoices", function (req, res, next) {
-    const invoices = fs.readFileSync('./storage/invoices.json', 'utf8');
+    const invoices = JSON.parse(fs.readFileSync('./storage/invoices.json', 'utf8'));
     if(!invoices)   res.status(404).send({ status: 404, msg: "Invoices not found." });
     res.send(invoices);
 })
