@@ -1,8 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const fs = require("fs");
-const { createNewToken, createIntent, processPayment, getTransaction, createPayLink } = require("../models");
-const { checkForUpdate, createFakeData, dueDate, createDate,updateFromNotification} = require("../utils")
+const { createNewToken, createIntent, processPayment, getTransaction, createPayLink ,getPaylinkById} = require("../models");
+const { checkForUpdate, createFakeData, dueDate, createDate,updateFromNotification} = require("../utils");
+const { constants } = require("buffer");
 
 
 router.post("/token", function (req, res, next) {
@@ -70,6 +71,15 @@ router.post("/paylink/", function (req, res, next) {
             res.status(status).send({ status: status, msg: data.error })
         })
 })
+
+// get paylink 
+
+router.get("/paylinks/:id",function(req,res,next){
+return getPaylinkById(req.params.id).then((paylink)=>{
+    res.send(paylink)
+})
+
+} )
 
 // invoice managment
 router.get("/invoices", function (req, res, next) {
@@ -184,8 +194,9 @@ router.post("/paylink-notification", function (req, res, next) {
         res.status(404).send({ status: 404, msg: "Invoice not found." })
     } else {
         invoice.status = "Paid"
+        invoice.paylinkDetails = req.body;
         invoices[index] = invoice;
-
+           console.log(req.body)
         fs.writeFile("./storage/invoices.json", JSON.stringify({ created_at, invoices }), (err) => {
             if (err)
                 console.log(err);
@@ -208,4 +219,7 @@ router.post("/payment-notification", function(req,res,next){
 
     res.send({notification: "recieved"})
 })
+
+
+
 module.exports = router;
