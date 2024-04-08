@@ -42,8 +42,8 @@ exports.createIntent = (body) => {
         return data;
 
     }).then((res) => res).catch((err) => {
-            return err.response.data
-        });
+        return err.response.data
+    });
 
 
 }
@@ -92,4 +92,22 @@ exports.createPayLink = (body) => {
 
         console.log("Error is here: ", err)
     })
+}
+
+exports.getPaylinkById = (id) => {
+    const { access_token } = getToken();
+    return axios.get(`https://${process.env.BLINK_ENV}.blinkpayment.co.uk/api/paylink/v1/paylinks/${id}`,
+        {
+            headers: {
+                Authorization: `Bearer ${access_token}`,
+                Accept: "*/*",
+                "Accept-Encoding": "gzip, deflate, br",
+                "Accept-Charset": "",
+            }
+        }).then((res) => {
+            return res.data
+        }).catch((err) => {
+
+            console.log("Error is here: ", err)
+        })
 }
