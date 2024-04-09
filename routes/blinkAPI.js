@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const fs = require("fs");
-const { createNewToken, createIntent, processPayment, getTransaction, createPayLink ,getPaylinkById} = require("../models");
+const { createNewToken, createIntent, processPayment, getTransaction, createPayLink ,getPaylinkById, getIntentById} = require("../models");
 const { checkForUpdate, createFakeData, dueDate, createDate,updateFromNotification} = require("../utils");
 const { constants } = require("buffer");
 
@@ -21,6 +21,16 @@ router.post("/token", function (req, res, next) {
 
 router.post("/intent", function (req, res, next) {
     return createIntent(req.body)
+        .then((intent) => {
+            res.send(intent)
+        }).catch((err) => {
+            const { status, data } = err.response;
+            res.status(status).send({ status: status, msg: data.error })
+        })
+});
+
+router.get("/intents/:id", function (req, res, next) {
+    return getIntentById(req.params.id)
         .then((intent) => {
             res.send(intent)
         }).catch((err) => {
