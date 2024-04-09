@@ -62,6 +62,23 @@ exports.processPayment = (body) => {
     })
 
 }
+
+
+exports.getIntentById = (id)=>{
+    const { access_token } = getToken();
+    return instance.get(`/intents/${id}`, {
+        headers: {
+            Authorization: `Bearer ${access_token}`,
+            Accept: "*/*",
+            "Accept-Encoding": "gzip, deflate, br",
+            "Accept-Charset": "",
+        }
+    })
+    .then((res) => {
+        return res.data;
+    })
+}
+
 exports.getTransaction = (id) => {
     const { access_token } = getToken();
     return instance.get(`/transactions/${id}`, {
